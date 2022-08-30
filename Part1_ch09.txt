@@ -1,0 +1,65 @@
+ch.09 도커 컨테이너 다루기 : 이미지 빌드
+
+## 도커 이미지 구조
+
+				web app source
+		nginx		nginx		
+Layer C		Layer C		Layer C		
+Layer B	=> 	Layer B	=> 	Layer B	=> 		R/W layer
+Layer A		Layer A		Layer A
+
+Ubuntu		nginx		WebApp			webapp image layers = read only
+	
+		
+		Docker Image				Docker Container
+
+
+## Dockerfile없이 이미지 생성
+
+기존 컨테이너 기반으로 새 이미지를 생성할 수 있다.
+
+#docker commit [OPTIONS] CONTAINER [REPOSITORY[:TAG]]
+#ubuntu 컨테이너의 현재 상태를 my_ubuntu:v1 이미지로 생성
+$docker commit -a fastcampus -m "First Commit" ubuntu my_ubuntu:v1
+
+## Dockerfile 이용하여 이미지 생성
+
+Dockerfile 을 기반으로 새 이미지를 생성 할 수 있다.
+
+
+지시어	해당 지시어의 argumant(인자값)
+FROM node:12-alpine
+RUN apk add --no-cache python3 g++ make
+WORKDIR /app
+COPY . .
+RUN yarn install --production
+CMD ["node", "src/index.js"]
+순차적으로 진행함
+
+#docker build [OPTIONS] PATH
+#./ 디렉토리를 빌드 컨텍스트로 my_app:v1 이미지 빌드 (Dockerfile 이용)
+$ docker build -t my_app:v1 ./
+
+#./ 디렉토리를 빌드 컨텍스트로 my_app:v1 이미지 빌드 (example/MyDockerfile이용 )
+$ docker build -t my_app:v1 -f example/MyDockerfile ./
+
+##빌드 컨텍스트
+도커 빌드 명령 수행시 현재 디렉토리(Current Working Directory) (ex) COPY . .) 를 빌드 컨텍스트 (Build context) 라고 합니다. 
+Dockerfile로부터 이미지 빌드에 필요한 정보를 도커 데몬에게 전달하기 위한 목적입니다.
+
+ 
+##.dockerignore
+
+.gitignore와 문법을 가지고 있다.
+특정 디렉토리 혹은 파일 목록을 빌드 컨텍스트에서 제외하기 위한 목적
+
+#comment
+*/temp*
+*/*/temp*
+temp?
+
+*.md
+!README.md
+
+
+ 

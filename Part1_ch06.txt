@@ -1,0 +1,43 @@
+ch 06 도커 컨테이너 다루기 : 네트워크
+
+##구조
+
+veth : virtual eth
+
+docker0 : 도커 엔진에 의해 기본 생성되는 브릿지 네트워크 => veth와 eth간 다리 역할
+
+
+$ docker run -p [HOST IP : PORT]:[CONTAINER PORT] [container]
+
+# nginx 컨테이너의 80번 포트를 호스트 모든 IP의 80번 포트와 연결하여 실행
+$ docker run -d -p 80:80 nginx
+
+# nginx 컨테이너의 80번 포트를 호스트 127.0.0.1 ip의 80번 포트와 연결하여 실행
+$ docker run -d -p 127.0.01:80:80 nginx
+
+# nginx 컨테이너의 80번포트를 호스트의 사용 가능한 포트와 연결하여 실행
+$ docker run -d -p 80 nginx
+
+## Expose VS Publish
+
+#expose 옵션은 그저 문서화 용도
+$ docker run -d --expose 80 --name nginx-expose nginx
+
+#publish 옵션은 실제 포트를 바인딩
+$ docker run -d -p 80 nginx
+
+##Network Driver
+
+Docker -> Container Network Model  ->Native Drivers -> Bridge, Host, None, Overlay
+			          	->Remote Drivers -> 3rd-party Plugins
+
+			Docker Networking
+	|						|
+Single host Networking				Multi Host Networking
+		|					   |
+		Driver 					Driver
+    |		|		  |			     |
+Bridge		Host		None			Overlay(docker swarm)
+    |
+Docker0(default)
+user defined

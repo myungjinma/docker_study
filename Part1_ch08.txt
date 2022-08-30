@@ -1,0 +1,58 @@
+ch.08 도커 컨테이너 다루기 : 로그
+
+##STDOUT /STDERR
+
+표준출력과 표준 오류
+
+docker container 에서 로그를 다루는 법은 어플리케이션에서 로그를 표준출력과 표준 오류로 삼아 출력해야한다.
+
+APP Container 
+   |		  |
+stdout 		stderr
+ 	    |
+        logging driver 
+	    |
+non local json-file syslog journald gelf fluentd awslog ...
+
+
+##로그 확인하기
+
+#전체 로그 확인
+$ docker logs [container]
+
+#마지막 로그 10줄 확인
+$ docker logs --tail 10 [container]
+
+#실시간 로그 스트림 확인
+$ docker logs -f [container]
+
+#로그마다 타임스탬프 표시
+$ docker logs -f -t [contianer]
+
+
+##호스트 운영체제의 로그 저장 경로
+
+Log Driver = json-file일때만 남음 
+
+json-file 로그드라이버가 파일로 남는다 = 호스트 운영체제에 남는다
+
+$ cat /var/lib/docker/containers/${CONTAINER_ID}/${CONTAINER_ID}-json.log
+
+
+##로그 용량 제한하기
+
+컨테이너 단위로 로그 용량 제한을 할 수 있지만,  도커 엔진에서 기본 설정을 진행할 수 도 있습니다(운영환경에서 필수 설정)
+
+#한 로그 파일 당 최대 크기를 3MB로 제한하고, 최대 로그 파일 3개로 로테이팅.
+$docker run \
+  -d \
+  --log-driver=json-file \
+  --log-opt max-size=3m \
+  --log-opt max-file=5 \
+  nginx
+
+
+##도커 로그 드라이버
+로그 에이전트를 설치하고 elastic, splunks graylog cloudwatch에서 전체 로그를 확인 할 수 있다.
+
+로그 쌓는 형태의 드라이버들: json-file, journald, Syslog, fluentd, ETW, Splunks, Gelf, Logentries, Amazon CloudWatch, Google Cloud 
